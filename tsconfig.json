@@ -9,6 +9,9 @@
       ],
       "app-login": [
         "./dist/app-login"
+      ],
+      "app-profiles": [
+        "./dist/app-profiles"
       ]
     },
     "outDir": "./dist/out-tsc",

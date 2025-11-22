@@ -1,31 +1,65 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
+import { NavigationService } from '../../../../../app/src/app/services/navigation.service';
+import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { addIcons } from 'ionicons';
+import { eye, eyeOff } from 'ionicons/icons'
+import { AppLoginService } from '../../app-login.service';
+import { LoginModel } from '../../models/login.model';
 
 @Component({
   selector: 'lib-auth',
   standalone: true,
-  imports: [IonicModule, CommonModule],
+  imports: [IonicModule, CommonModule, ReactiveFormsModule],
   templateUrl: './auth.component.html',
   styleUrl: './auth.component.css'
 })
-export class AuthComponent {
-  screen: 'login' | 'login-doctor' | 'register' = 'login';
+export class AuthComponent implements OnInit {
 
-  patientEmail = 'paciente@medify.com';
-  patientPassword = 'password';
+  fg!: FormGroup;
+  showPassword: boolean = false;
 
-  doctorEmail = 'doctor@medify.com';
-  doctorPassword = 'password';
+  constructor(private navService: NavigationService, private authService: AppLoginService) {}
+  
+  
+  ngOnInit(): void {
+    this.fg = this.getFg();
+    addIcons({eye, eyeOff});
+  }
 
-  constructor() {}
+  handleLogin() {
+    this.authService.login(this.cmd);
+  }
 
-  handleLogin(role: 'patient' | 'doctor') {
-    if (role === 'patient') {
-      console.log('Login paciente:', this.patientEmail, this.patientPassword);
-    } else {
-      console.log('Login doctor:', this.doctorEmail, this.doctorPassword);
+  togglePassword() {
+    this.showPassword = !this.showPassword;
+  }
+
+  navToRegister() {
+    alert("registrooo");
+  }
+
+  private getFg(): FormGroup {
+    return new FormGroup({
+      username: new FormControl('', [Validators.required, this.validateUsername]), 
+      password: new FormControl('', [Validators.required])
+    })
+  }
+
+  private validateUsername(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      return typeof control == 'string' ? null : {error: {value: control.value}} 
     }
+  }
+
+  private get cmd(): LoginModel {
+    const formValues = this.fg.getRawValue();
+
+    return {
+      username: formValues.username,
+      password: formValues.password
+    } as LoginModel;
   }
 }
 

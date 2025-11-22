@@ -5,6 +5,8 @@ import { enviroment } from '../../../app/src/enviroments/enviroment';
 import { HttpClient } from '@angular/common/http';
 import { LoginModel, LoginResponseModel } from './models/login.model';
 import { ReAuthenticateModel } from './models/retauthenticate.interface';
+import { PacientesModel } from './models/profiles.model';
+import { AlertService } from '../../../app-core/src/lib/services/alert.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,20 +14,37 @@ import { ReAuthenticateModel } from './models/retauthenticate.interface';
 export class AppLoginService {
 
   private url = enviroment.urlLogin;
-  private userBs$: BehaviorSubject<LoginResponseModel> = new BehaviorSubject<LoginResponseModel>(LoginResponseModel.Create());
-  constructor(private http: HttpClient) { }
+  private pacientesUrl = enviroment.urlPacientes;
+  private medicosUrl = enviroment.urlMedicos;
 
-  register(registerModel: RegisterModel): Observable<RegisterResponse>{
+  hasProfile: boolean = false;
+
+  private userBs$: BehaviorSubject<LoginResponseModel> = new BehaviorSubject<LoginResponseModel>(LoginResponseModel.Create());
+  userObs$ = this.userBs$.asObservable();
+
+  constructor(private http: HttpClient, private alertService: AlertService) { }
+
+  register(registerModel: RegisterModel): Observable<RegisterResponse> {
     const fullUrl = this.url + 'register';
     return this.http.post<RegisterResponse>(fullUrl, registerModel);
   }
 
-  login(loginModel: LoginModel): void{
+  login(loginModel: LoginModel): void {
     const fullUrl = this.url + 'login';
-    this.http.post<LoginResponseModel>(fullUrl, loginModel).subscribe((res) => {
-      this.userBs$.next(res);
+    this.http.post<LoginResponseModel>(fullUrl, loginModel).subscribe({
+      next: res => {
+        this.userBs$.next(res);
+
+        if (res.user_rol) {
+          // this.hasProfile = true;
+        };
+      },
+      error: err => {
+        this.alertService.alert({header:"Error", message:`Algo malo ha sucedido. ${err.error.detail}`});
+      }
     });
   }
+
 
   reAuthenticate(): Observable<LoginResponseModel> {
     const fullUrl = this.url + 'reauthenticate';
@@ -34,11 +53,15 @@ export class AppLoginService {
       refresh_token: user.refresh_token,
       id_user: user.id_user
     };
-    
+
     return this.http.post<LoginResponseModel>(fullUrl, cmd);
   }
 
-  setUser(user: LoginResponseModel){
+  isLogged(): boolean {
+    return this.userBs$.value.access_token !== undefined;
+  }
+
+  setUser(user: LoginResponseModel) {
     this.userBs$.next(user);
   }
 
