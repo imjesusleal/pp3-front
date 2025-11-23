@@ -5,8 +5,8 @@ import { enviroment } from '../../../app/src/enviroments/enviroment';
 import { HttpClient } from '@angular/common/http';
 import { LoginModel, LoginResponseModel } from './models/login.model';
 import { ReAuthenticateModel } from './models/retauthenticate.interface';
-import { PacientesModel } from './models/profiles.model';
-import { AlertService } from '../../../app-core/src/lib/services/alert.service';
+import { AlertService } from '../../../app-core/src/lib/services/alert/alert.service';
+import { HttpCoreService } from '../../../app-core/src/lib/services/http-core/http-core.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,37 +14,26 @@ import { AlertService } from '../../../app-core/src/lib/services/alert.service';
 export class AppLoginService {
 
   private url = enviroment.urlLogin;
-  private pacientesUrl = enviroment.urlPacientes;
-  private medicosUrl = enviroment.urlMedicos;
 
   hasProfile: boolean = false;
 
   private userBs$: BehaviorSubject<LoginResponseModel> = new BehaviorSubject<LoginResponseModel>(LoginResponseModel.Create());
   userObs$ = this.userBs$.asObservable();
 
-  constructor(private http: HttpClient, private alertService: AlertService) { }
+  constructor(private http: HttpCoreService, private alertService: AlertService) { }
 
   register(registerModel: RegisterModel): Observable<RegisterResponse> {
     const fullUrl = this.url + 'register';
-    return this.http.post<RegisterResponse>(fullUrl, registerModel);
+    return this.http.post$<RegisterResponse>(fullUrl, registerModel);
   }
 
   login(loginModel: LoginModel): void {
     const fullUrl = this.url + 'login';
-    this.http.post<LoginResponseModel>(fullUrl, loginModel).subscribe({
-      next: res => {
-        this.userBs$.next(res);
-
-        if (res.user_rol) {
-          // this.hasProfile = true;
-        };
-      },
-      error: err => {
-        this.alertService.alert({header:"Error", message:`Algo malo ha sucedido. ${err.error.detail}`});
-      }
+    this.http.post$<LoginResponseModel>(fullUrl, loginModel).subscribe((res) => {
+      this.userBs$.next(res);
+      this.setSession(res);
     });
   }
-
 
   reAuthenticate(): Observable<LoginResponseModel> {
     const fullUrl = this.url + 'reauthenticate';
@@ -54,11 +43,17 @@ export class AppLoginService {
       id_user: user.id_user
     };
 
-    return this.http.post<LoginResponseModel>(fullUrl, cmd);
+    return this.http.post$<LoginResponseModel>(fullUrl, cmd);
+  }
+
+  logout() {
+    this.userBs$.next(LoginResponseModel.Create());
+    sessionStorage.clear();
   }
 
   isLogged(): boolean {
-    return this.userBs$.value.access_token !== undefined;
+    const user = this.userBs$.value;
+    return user.access_token !== undefined || this.getUserFromSession().access_token !== undefined;
   }
 
   setUser(user: LoginResponseModel) {
@@ -66,7 +61,13 @@ export class AppLoginService {
   }
 
   getUser(): LoginResponseModel {
-    return this.userBs$.value;
+    const user = this.userBs$.value;
+    return user || this.getUserFromSession();
+  }
+
+  getUserFromSession(): LoginResponseModel {
+    const raw = sessionStorage.getItem('user');
+    return raw ? JSON.parse(raw) as LoginResponseModel : {};
   }
 
   getAccessToken(): string | undefined {
@@ -79,5 +80,9 @@ export class AppLoginService {
 
   getUserId(): number | undefined {
     return this.userBs$.value.id_user;
+  }
+
+  private setSession(user: LoginResponseModel) {
+    sessionStorage.setItem('user', JSON.stringify(user))
   }
 }

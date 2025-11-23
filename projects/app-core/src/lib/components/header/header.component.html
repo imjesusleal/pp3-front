@@ -1,0 +1,89 @@
+<ng-container>
+  <ng-container *ngIf="esMedico" [ngTemplateOutlet]="tmplMedico"></ng-container>
+  <ng-container *ngIf="!esMedico" [ngTemplateOutlet]="tmplPaciente"></ng-container>
+</ng-container>
+
+
+<ng-template #tmplPaciente>
+  <ion-header>
+    <ion-toolbar>
+
+      <ion-buttons slot="start">
+        <ion-button fill="clear" (click)="backToHome()">
+          <ion-icon [src]="shieldSvg"></ion-icon>
+        </ion-button>
+        <ion-title>Medify</ion-title>
+      </ion-buttons>
+
+      <ion-buttons class="center-buttons">
+        <ion-button fill="clear" (click)="handleNav('paciente')">
+          <ion-label>Buscar Médico</ion-label>
+        </ion-button>
+
+        <ion-button fill="clear" (click)="handleNav('paciente')">
+          <ion-label>Historial</ion-label>
+        </ion-button>
+
+        <ion-button fill="clear" (click)="handleNav('paciente')">
+          <ion-label>Próximos Turnos</ion-label>
+        </ion-button>
+
+        <ion-button fill="clear" (click)="handleNav('perfil')">
+          <ion-label>Mi Perfil</ion-label>
+        </ion-button>
+      </ion-buttons>
+      
+      <ion-buttons slot="end">
+        <ion-button fill="outline" (click)="handleLogout()">
+          <ion-icon [src]="logOutOutlineSvg" slot="start"></ion-icon>
+          Salir
+        </ion-button>
+      </ion-buttons>
+
+    </ion-toolbar>
+  </ion-header>
+</ng-template>
+
+<ng-template #tmplMedico>
+  <ion-header>
+    <ion-toolbar>
+
+      <!-- IZQUIERDA -->
+      <ion-buttons slot="start">
+        <ion-button fill="clear">
+          <ion-icon [src]="shieldSvg"></ion-icon>
+        </ion-button>
+        <ion-title>Medify</ion-title>
+      </ion-buttons>
+
+      <!-- CENTRO: MENÚ -->
+      <ion-buttons class="center-buttons">
+        <ion-button fill="clear" (click)="handleNav('medico')">
+          <ion-label>Mi Agenda</ion-label>
+        </ion-button>
+
+        <ion-button fill="clear" (click)="handleNav('medico')">
+          <ion-label>Historial Atenciones</ion-label>
+        </ion-button>
+
+        <ion-button fill="clear" (click)="handleNav('medico')">
+          <ion-label>Métricas</ion-label>
+        </ion-button>
+
+        <ion-button fill="clear" (click)="handleNav('perfil')">
+          <ion-label>Mi Perfil</ion-label>
+        </ion-button>
+      </ion-buttons>
+
+      <!-- DERECHA -->
+      <ion-buttons slot="end">
+        <ion-button fill="outline" (click)="handleLogout()">
+          <ion-icon [src]="logOutOutlineSvg" slot="start"></ion-icon>
+          Salir
+        </ion-button>
+      </ion-buttons>
+
+    </ion-toolbar>
+  </ion-header>
+
+</ng-template>

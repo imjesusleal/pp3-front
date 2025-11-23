@@ -1,5 +1,5 @@
 export interface AlertModel{
-    header: string;
+    header?: string;
     message: string;
     buttons?: string[];
 }

@@ -6,12 +6,6 @@ import { UserRoles } from '../../../../../app-login/src/lib/models/user_roles.en
 export const pacientesGuard: CanActivateChildFn = (childRoute, state) => {
   const authService = inject(AppLoginService);
 
-  if (!authService.hasProfile) {
-    return false;
-  }
-
-
-  const user = authService.getUser();
-
+  let user = authService.getUser();
   return user.user_rol == UserRoles.Pacientes;
 };

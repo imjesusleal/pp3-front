@@ -4,5 +4,11 @@ import { AppLoginService } from '../../../../../app-login/src/public-api';
 
 export const authGuard: CanActivateChildFn = (childRoute, state) => {
   const authService = inject(AppLoginService)
-  return authService.isLogged();
+  const user = authService.getUser();
+
+  if (!user) return false;
+
+  if (!user.access_token) return false;
+
+  return true;
 };

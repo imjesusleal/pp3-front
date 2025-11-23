@@ -1,0 +1,44 @@
+ion-card {
+  max-width: 450px;
+  margin: 20px auto;
+  border-radius: 16px;
+  --background: #fff;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+}
+
+.form-item {
+  --highlight-height: 0;
+  margin-bottom: 16px;
+
+  ion-label {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #444;
+  }
+
+  ion-input,
+  ion-select {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 10px 14px;
+    margin-top: 6px;
+    --padding-start: 0;
+    background: #fafafa;
+  }
+}
+
+.password-toggle {
+  position: absolute;
+  right: 10px;
+  bottom: 12px;
+  cursor: pointer;
+  color: #666;
+}
+
+.submit-btn {
+  margin-top: 12px;
+  --border-radius: 20px;
+  height: 48px;
+  font-weight: bold;
+}

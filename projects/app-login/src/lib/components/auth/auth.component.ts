@@ -37,7 +37,7 @@ export class AuthComponent implements OnInit {
   }
 
   navToRegister() {
-    alert("registrooo");
+    this.navService.goToRegister()
   }
 
   private getFg(): FormGroup {

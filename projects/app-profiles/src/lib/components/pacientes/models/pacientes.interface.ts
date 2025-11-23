@@ -1,8 +1,8 @@
 export interface PacientesModel {
     idPaciente: number;
-    idUser: number;
-    documentoIdentificativo: number;
+    id_user: number;
+    documento_identificativo: number;
     nombre: string;
     apellido: string;
-    imgName: string;
+    img_name: string;
 }

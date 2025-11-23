@@ -1,0 +1,34 @@
+
+<h1 style="text-align: center;">Mi perfil</h1>
+
+
+<ion-card class="compact-card">
+    <lib-profile-card [user]="user" [pacientePerfil]="paciente"></lib-profile-card>
+
+    <hr class="card-divider">
+
+    <ion-card-header>
+        <ion-card-title class="card-title">Información Personal</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content class="card-content">
+        <div class="row">
+            <ion-icon name="person-outline" class="icon"></ion-icon>
+            <span>{{this.paciente.nombre}}</span>
+        </div>
+
+        <div class="row">
+            <ion-icon name="id-card-outline" class="icon"></ion-icon>
+            <span>{{this.paciente.apellido}}</span>
+        </div>
+
+        <div class="row">
+            <ion-icon name="document-text-outline" class="icon"></ion-icon>
+            <span>{{this.transformDocumento()}}</span>
+        </div>
+
+        <ion-button expand="block" color="light" class="editar-btn" (click)="onEditarPerfil()">
+            Editar Perfil
+        </ion-button>
+    </ion-card-content>
+</ion-card>

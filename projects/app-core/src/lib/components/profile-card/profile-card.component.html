@@ -1,0 +1,23 @@
+<div style="text-align: center; margin-top: 20px;">
+
+    <div (click)="openFileInput()" style="display: inline-block; cursor: pointer;">
+        <ion-avatar style="width: 100px; height: 100px;">
+            
+            <ion-img *ngIf="profileImage" [src]="profileImage">
+
+            </ion-img>
+
+            <!-- Si NO hay imagen -->
+            <div *ngIf="!profileImage" style="background: #9e9e9e; width: 100%; height: 100%;
+                  display: flex; justify-content: center; align-items: center;
+                  border-radius: 50%; color: white; font-size: 40px;">
+                {{ userInitial }}
+            </div>
+
+        </ion-avatar>
+    </div>
+
+    <input #fileInput type="file" accept="application/pdf,.pdf, image/jpeg, image/jpg, .jpeg, .jpg" style="display: none;"
+        (change)="onFileSelected($event)" />
+    <h3 style="font-family: system-ui;">{{ user.username }}</h3>
+</div>

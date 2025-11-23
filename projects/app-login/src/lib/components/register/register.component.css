@@ -1,0 +1,9 @@
+a {
+    cursor: pointer;
+}
+
+.select-stacked-right ion-select::part(icon) {
+  position: absolute;
+  right: 0;
+  bottom: 0.6rem; /* ajusta la altura */
+}

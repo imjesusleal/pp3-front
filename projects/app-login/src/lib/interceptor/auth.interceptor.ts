@@ -1,67 +1,76 @@
-import { Injectable } from '@angular/core';
-import {
-  HttpEvent,
-  HttpHandler,
-  HttpInterceptor,
-  HttpRequest,
-  HttpErrorResponse
-} from '@angular/common/http';
-import { Observable, throwError, switchMap } from 'rxjs';
+import { inject } from '@angular/core';
+import { HttpErrorResponse, HttpEvent, HttpHandlerFn, HttpRequest } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { catchError, switchMap } from 'rxjs/operators';
 import { AppLoginService } from '../app-login.service';
 
-@Injectable()
-export class AuthInterceptor implements HttpInterceptor {
 
-  private isRefreshing = false;
+let isRefreshing = false;
 
-  constructor(private authService: AppLoginService) {}
+export function authInterceptorFn(
+  req: HttpRequest<any>,
+  next: HttpHandlerFn
+): Observable<HttpEvent<any>> {
 
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  const authService = inject(AppLoginService);
+  let authReq = req;
 
-    let authReq = req;
+  const accessToken = authService.getAccessToken();
+  if (accessToken) {
+    authReq = addToken(req, accessToken);
+  }
 
-    const accessToken = this.authService.getAccessToken();
-    if (accessToken) {
-      authReq = this.addToken(req, accessToken);
-    }
+  // return next(authReq).pipe(
+  //   switchMap((event) => {
+  //     return [event];
+  //   }),
+  //   (source$) =>
+  //     source$.pipe(
+  //       switchMap((eventOrError: any) => {
+  //         if (eventOrError instanceof HttpErrorResponse && eventOrError.status === 401) {
+  //           return handle401(req, next, authService);
+  //         }
+  //         return [eventOrError];
+  //       })
+  //     )
+  // );
+  return next(authReq).pipe(
+    catchError((error) => {
+      // Si NO es 401: devolvelo como error
+      if (!(error instanceof HttpErrorResponse) || error.status !== 401) {
+        return throwError(() => error);
+      }
 
-    return next.handle(authReq).pipe(
-      switchMap((event) => {
-        return [event]; 
-      }),
-      (source$) =>
-        source$.pipe(
-          (error: any) => {
-            if (error instanceof HttpErrorResponse && error.status === 401) {
-              return this.handle401(req, next);
-            }
-            return throwError(() => error);
-          }
-        )
+      // Es 401 → refrescar
+      return handle401(req, next, authService);
+    })
+  );
+}
+
+function handle401(
+  req: HttpRequest<any>,
+  next: HttpHandlerFn,
+  authService: AppLoginService
+) {
+  if (!isRefreshing) {
+    isRefreshing = true;
+
+    return authService.reAuthenticate().pipe(
+      switchMap((res: any) => {
+        isRefreshing = false;
+        authService.setUser(res);
+        return next(addToken(req, res.access_token));
+      })
     );
   }
 
-  private handle401(req: HttpRequest<any>, next: HttpHandler) {
-    if (!this.isRefreshing) {
-      this.isRefreshing = true;
+  return throwError(() => new Error('Refresh in progress'));
+}
 
-      return this.authService.reAuthenticate().pipe(
-        switchMap((res: any) => {
-          this.isRefreshing = false;
-          this.authService.setUser(res);
-          return next.handle(this.addToken(req, res.access_token));
-        })
-      );
+function addToken(req: HttpRequest<any>, token: string) {
+  return req.clone({
+    setHeaders: {
+      Authorization: `Bearer ${token}`
     }
-
-    return throwError(() => new Error('Refresh in progress'));
-  }
-
-  private addToken(req: HttpRequest<any>, token: string): HttpRequest<any> {
-    return req.clone({
-      setHeaders: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-  }
+  });
 }

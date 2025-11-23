@@ -37,5 +37,9 @@ export class AppComponent implements AfterViewInit {
     if (res.user_rol == UserRoles.Pacientes) {
       this.navService.perfilPaciente();
     }
+
+    if (res.user_rol == UserRoles.Medicos) {
+      alert("holaaa soy medico jeje :P");
+    }
   }
 }
