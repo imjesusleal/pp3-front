@@ -19,13 +19,17 @@ export class HttpCoreService {
     )
   }
 
-  post$<T>(url: string, params?: any, errorMsg?: string):Observable<T> {
-    return this.http.post<T>(url, params).pipe(
+  post$<T>(url: string, params?: any, errorMsg?: string, credentials?: boolean):Observable<T> {
+    return this.http.post<T>(url, params, {withCredentials: credentials}).pipe(
       catchError((err) => {
         console.log(err.error);
         return this.alertService.alert$({message: errorMsg ?? 'Error: ' + `${err.error}`});
       })
     )
+  }
+  
+  rawPost$<T>(url: string, params?: any, errorMsg?: string, credentials?: boolean):Observable<T> {
+    return this.http.post<T>(url, params, {withCredentials: credentials});
   }
 
   download$(url: string, params?: any, errorMsg?:string):Observable<Blob> {

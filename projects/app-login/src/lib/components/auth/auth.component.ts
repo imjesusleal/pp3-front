@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { NavigationService } from '../../../../../app/src/app/services/navigation.service';
 import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { addIcons } from 'ionicons';
 import { eye, eyeOff } from 'ionicons/icons'
 import { AppLoginService } from '../../app-login.service';
-import { LoginModel } from '../../models/login.model';
+import { LoginModel, LoginResponseModel } from '../../models/login.model';
+import { UserRoles } from '../../models/user_roles.enum';
 
 @Component({
   selector: 'lib-auth',
@@ -29,7 +30,13 @@ export class AuthComponent implements OnInit {
   }
 
   handleLogin() {
-    this.authService.login(this.cmd);
+    this.authService.login(this.cmd).subscribe((res: LoginResponseModel) => {
+      if(res.user_rol == UserRoles.Pacientes) {
+        this.navService.perfilPaciente();
+      }else {
+        alert("voy para medicoooo");
+      }
+    })
   }
 
   togglePassword() {

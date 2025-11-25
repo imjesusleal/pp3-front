@@ -22,8 +22,9 @@ export class PacientesComponent implements OnInit {
   paciente!: PacientesModel;
 
   constructor(private authService: AppLoginService,
-    private http: PacientesHttpService, 
-    private dataService: PacientesDataService) {
+    private http: PacientesHttpService,
+    private dataService: PacientesDataService,
+    private navService: NavigationService) {
   }
 
   ngOnInit(): void {
@@ -32,7 +33,15 @@ export class PacientesComponent implements OnInit {
 
   private getPerfil() {
     const user = this.authService.getUser();
-    this.http.get(user.id_user!).subscribe(((res: PacientesModel) => this.dataService.updatePerfil(res)));
+    this.http.get(user.id_user!).subscribe({
+      next: (res) => {
+        this.dataService.updatePerfil(res);
+        this.paciente = res;
+      }, 
+      error: (err) => {
+        this.navService.createPerfil();
+      }
+    })
   }
 }
 

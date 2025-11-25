@@ -4,12 +4,7 @@ import { UserRoles } from '../../../../../app-login/src/lib/models/user_roles.en
 import { AppLoginService } from '../../../../../app-login/src/public-api';
 
 export const medicosGuard: CanActivateChildFn = (childRoute, state) => {
-  const authService = inject(AppLoginService)
-
-  if (!authService.hasProfile) {
-    return false;
-  }
-
+  const authService = inject(AppLoginService);
   const user = authService.getUser();
   return user.user_rol == UserRoles.Medicos;
 };

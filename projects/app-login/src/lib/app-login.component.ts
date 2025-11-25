@@ -1,16 +1,18 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { IonicModule } from '@ionic/angular';
 
 @Component({
   selector: 'lib-app-login',
   standalone: true,
-  imports: [],
+  imports: [RouterOutlet, IonicModule],
+  host: { '[attr.ngSkipHydration]': 'true' },
   template: `
-    <p>
-      app-login works!
-    </p>
+    <ion-content class="ion-padding">
+      <router-outlet></router-outlet>
+    </ion-content>
   `,
   styles: ``
 })
 export class AppLoginComponent {
-
 }

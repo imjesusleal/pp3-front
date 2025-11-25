@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { IonicModule } from '@ionic/angular'
 import { CommonModule } from '@angular/common';
 import { AppLoginService } from '../../../app-login/src/public-api';
@@ -14,32 +14,13 @@ import { LoginResponseModel } from '../../../app-login/src/lib/models/login.mode
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
-export class AppComponent implements AfterViewInit {
+export class AppComponent implements OnInit {
 
-  constructor(private authService: AppLoginService, private navService: NavigationService) {
-
+  constructor(private navService: NavigationService, private router: Router) {
   }
 
-  ngAfterViewInit(): void {
-    this.authService.userObs$.subscribe((res) => {
-      if (!res.access_token) {
-        return;
-      }
-      this.handleNavigation(res);
-    })
-  }
-
-  private handleNavigation(res: LoginResponseModel) {
-    if (!res.user_rol) {
-      this.navService.createPerfil();
-    }
-
-    if (res.user_rol == UserRoles.Pacientes) {
-      this.navService.perfilPaciente();
-    }
-
-    if (res.user_rol == UserRoles.Medicos) {
-      alert("holaaa soy medico jeje :P");
-    }
+  ngOnInit(): void {
+    this.navService.init();
   }
 }
+  

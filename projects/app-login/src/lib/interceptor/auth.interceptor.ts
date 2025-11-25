@@ -20,20 +20,6 @@ export function authInterceptorFn(
     authReq = addToken(req, accessToken);
   }
 
-  // return next(authReq).pipe(
-  //   switchMap((event) => {
-  //     return [event];
-  //   }),
-  //   (source$) =>
-  //     source$.pipe(
-  //       switchMap((eventOrError: any) => {
-  //         if (eventOrError instanceof HttpErrorResponse && eventOrError.status === 401) {
-  //           return handle401(req, next, authService);
-  //         }
-  //         return [eventOrError];
-  //       })
-  //     )
-  // );
   return next(authReq).pipe(
     catchError((error) => {
       // Si NO es 401: devolvelo como error

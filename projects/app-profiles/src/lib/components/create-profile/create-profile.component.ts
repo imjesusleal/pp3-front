@@ -40,7 +40,6 @@ export class CreateProfileComponent implements OnInit {
     this.esPaciente = this.user.user_rol === UserRoles.Pacientes;
   
     this.fg = this.getFg()
-
   }
 
   private getFg(): FormGroup{
