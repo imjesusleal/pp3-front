@@ -10,26 +10,9 @@ export class NavigationService {
 
   private pacienteOptions: string[] = ['perfil'];
 
-  private lastRouteKey: string = 'lastRoute';
-  private restored: boolean = false;
 
   constructor(private router: Router, private alertService: AlertService) {
   }
-
-  init(): void {
-    if (typeof window === 'undefined') return;
-
-    this.router.events
-      .pipe(
-        filter(e => e instanceof NavigationEnd),
-        filter(() => !!localStorage.getItem(this.lastRouteKey)),
-        take(1)
-      )
-      .subscribe(() => {
-        this.restoreLastRoute();
-      });
-  };
-
 
   public goToLogin() {
     this.router.navigate(['auth', 'login'])
@@ -54,16 +37,5 @@ export class NavigationService {
     }
 
     this.router.navigate(['profiles', 'pacientes', nav]);
-  }
-
-  restoreLastRoute() {
-    if (this.restored) return;
-    this.restored = true;
-
-    const last = localStorage.getItem(this.lastRouteKey);
-    if (!last) return;
-    this.router.navigateByUrl(last).catch(err => {
-      console.warn('No se pudo restaurar la ruta:', err);
-    });
   }
 }

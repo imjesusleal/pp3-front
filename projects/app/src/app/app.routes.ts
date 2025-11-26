@@ -18,7 +18,7 @@ export const routes: Routes = [
     //Profiles
     {
         path:'profiles',
-        loadChildren: () => import('../../../app-profiles/src/lib/profiles.routes').then(m => m.PACIENTES_ROUTES),
+        loadChildren: () => import('../../../app-profiles/src/lib/profiles.routes').then(m => m.PROFILES_ROUTES),
         canActivate: [authGuard, pacientesGuard]
     }
 ];

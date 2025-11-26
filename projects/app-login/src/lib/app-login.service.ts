@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, lastValueFrom, Observable, tap } from 'rxjs';
 import { RegisterModel, RegisterResponse } from './models/register.interface';
 import { enviroment } from '../../../app/src/enviroments/enviroment';
 import { LoginModel, LoginResponseModel } from './models/login.model';
-import { ReAuthenticateModel } from './models/retauthenticate.interface';
 import { HttpCoreService } from '../../../app-core/src/lib/services/http-core/http-core.service';
 
 @Injectable({
@@ -19,6 +18,21 @@ export class AppLoginService {
   userObs$ = this.userBs$.asObservable();
 
   constructor(private http: HttpCoreService) { }
+
+  init(): Promise<void> {
+    return new Promise(resolve => {
+      lastValueFrom(this.reAuthenticate())
+        .then(user => {
+          this.userBs$.next(user);
+        })
+        .catch(error => {
+          return;
+        })
+        .finally(() => {
+          resolve();
+        });
+    });
+  }
 
   register(registerModel: RegisterModel): Observable<RegisterResponse> {
     const fullUrl = this.url + 'register';
